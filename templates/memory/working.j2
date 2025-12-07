@@ -3,6 +3,9 @@
 {% endfor %}{% else %}- none
 {% endif %}
 
+## Field Under Review
+- current_field: {{ state.working.field_under_review or "none" }}
+
 ## Reservation Goal
 - date: {{ state.working.goal_reservation.date or "unknown" }}
 - time: {{ state.working.goal_reservation.time or "unknown" }}
@@ -11,15 +14,6 @@
 - special_requests: {{ state.working.goal_reservation.special_requests or "none" }}
 - contact_name: {{ state.working.goal_reservation.contact_name or "unknown" }}
 - contact_phone: {{ state.working.goal_reservation.contact_phone or "unknown" }}
-
-## Shared With Staff
-- date: {{ state.working.shared_reservation.date or "unknown" }}
-- time: {{ state.working.shared_reservation.time or "unknown" }}
-- party_size: {{ state.working.shared_reservation.party_size or "unknown" }}
-- occasion: {{ state.working.shared_reservation.occasion or "none" }}
-- contact_name: {{ state.working.shared_reservation.contact_name or "unknown" }}
-- contact_phone: {{ state.working.shared_reservation.contact_phone or "unknown" }}
-- special_requests: {{ state.working.shared_reservation.special_requests or "none" }}
 
 ## Confirmed Slot
 - date: {{ state.working.confirmed_reservation.date or "unknown" }}

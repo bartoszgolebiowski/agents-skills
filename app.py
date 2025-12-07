@@ -3,11 +3,10 @@
 from __future__ import annotations
 
 import sys
+from datetime import date, time
 
 from engine.conversation import ReservationAgent
-
-## omimport env
-
+from memory.models import DesiredReservation, SemanticMemory
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -16,31 +15,46 @@ load_dotenv()
 def run_cli() -> None:
     """Start a simple CLI loop to interact with the agent."""
 
-    agent = ReservationAgent()
-    print("=== Symulacja gościa rezerwującego stolik w Atut Bistro ===")
+    # Create default Sarah Mitchell profile
+    semantic_memory = SemanticMemory.create(
+        guest_name="Sarah Mitchell",
+        guest_phone="+1-555-123-4567",
+    )
+
+    desired_reservation = DesiredReservation(
+        party_size=4,
+        occasion="dinner",
+        special_requests="table near the window with sunset view",
+    )
+
+    agent = ReservationAgent(
+        semantic_memory=semantic_memory,
+        desired_reservation=desired_reservation,
+    )
+    print("=== Restaurant Reservation Simulation ===")
     print(
-        "Odpowiadaj jako obsługa restauracji. Wpisz wiadomość i naciśnij Enter (quit, aby zakończyć).\n"
+        "Reply as the restaurant staff. Type your message and press Enter (quit to exit).\n"
     )
 
     try:
         reply = agent.step()
-        print(f"Aura: {reply}")
+        print(f"Agent: {reply}")
         while True:
             if agent.is_complete():
-                print("\nProces zakończony.")
+                print("\nProcess completed.")
                 break
-            user_message = input("Ty: ").strip()
+            user_message = input("You: ").strip()
             if user_message.lower() in {"quit", "exit"}:
-                print("Kończę rozmowę. Do zobaczenia!")
+                print("Ending conversation. Goodbye!")
                 break
             if not user_message:
                 continue
             reply = agent.step(user_message)
-            print(f"Aura: {reply}")
+            print(f"Agent: {reply}")
     except KeyboardInterrupt:
-        print("\nPrzerwano rozmowę. Do zobaczenia!")
+        print("\nConversation interrupted. Goodbye!")
     except Exception as exc:  # pragma: no cover
-        print(f"Wystąpił nieoczekiwany błąd: {exc}")
+        print(f"An unexpected error occurred: {exc}")
         sys.exit(1)
 
 

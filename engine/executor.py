@@ -31,6 +31,7 @@ class ExecutorAgent:
             "skill": skill,
         }
         prompt = skill.render_prompt(self._env, context)
+        print(f"[DEBUG] Prompt for skill {skill_name.value}:\n{prompt}\n")
         return self._llm_client.generate(
             prompt=prompt, response_model=skill.output_model, skill=skill, state=state
         )

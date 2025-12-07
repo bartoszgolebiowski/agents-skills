@@ -2,6 +2,14 @@
 - stage: {{ state.workflow.stage }}
 - availability_status: {{ state.workflow.availability_status }}
 - confirmation_status: {{ state.workflow.confirmation_status }}
-- details_shared: {{ state.workflow.details_shared }}
+- confirmed_fields:
+  - date: {{ state.workflow.confirmed_fields.date }}
+  - time: {{ state.workflow.confirmed_fields.time }}
+  - party_size: {{ state.workflow.confirmed_fields.party_size }}
+  - occasion: {{ state.workflow.confirmed_fields.occasion }}
+  - special_requests: {{ state.workflow.confirmed_fields.special_requests }}
+  - contact_name: {{ state.workflow.confirmed_fields.contact_name }}
+  - contact_phone: {{ state.workflow.confirmed_fields.contact_phone }}
+- all_required_confirmed: {{ state.workflow.confirmed_fields.all_required_confirmed() }}
 - blocking_issue: {{ state.workflow.blocking_issue or "none" }}
 - selected_slot_note: {{ state.workflow.selected_slot_note or "none" }}

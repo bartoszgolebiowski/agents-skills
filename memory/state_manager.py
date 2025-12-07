@@ -2,11 +2,17 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Callable, Dict
+from typing import TYPE_CHECKING, Callable, Dict, Optional
 
 from pydantic import BaseModel
 
-from memory.models import AlternativeOption, GlobalMemory, ReservationDetails
+from memory.models import (
+    AlternativeOption,
+    DesiredReservation,
+    GlobalMemory,
+    ReservationDetails,
+    SemanticMemory,
+)
 from shared.enums import (
     AvailabilityStatus,
     ConfirmationStatus,
@@ -28,10 +34,45 @@ if TYPE_CHECKING:  # pragma: no cover
 UpdateHandler = Callable[[GlobalMemory, BaseModel], None]
 
 
-def create_initial_state() -> GlobalMemory:
-    """Return a fully initialized memory tree for a new session."""
+def _get_next_missing_field(state: GlobalMemory) -> Optional[str]:
+    """Get the first missing required field in order: party_size, contact_name, contact_phone."""
+    cf = state.workflow.confirmed_fields
+    required_fields = ["party_size", "contact_name", "contact_phone", "date", "time"]
+    for field in required_fields:
+        if not getattr(cf, field):
+            return field
+    return None
 
+
+def _set_next_field_under_review(state: GlobalMemory) -> None:
+    """Set field_under_review to the next missing field."""
+    state.working.field_under_review = _get_next_missing_field(state)
+
+
+def create_initial_state(
+    semantic_memory: Optional[SemanticMemory] = None,
+    desired_reservation: Optional[DesiredReservation] = None,
+) -> GlobalMemory:
+    """Return a fully initialized memory tree for a new session.
+
+    Args:
+        semantic_memory: Optional SemanticMemory with custom guest/restaurant data.
+        desired_reservation: Optional DesiredReservation with custom booking preferences.
+
+    Returns:
+        A fully initialized GlobalMemory state.
+    """
     state = GlobalMemory()
+
+    # Apply custom semantic memory if provided
+    if semantic_memory is not None:
+        state.semantic = semantic_memory
+
+    # Apply custom desired reservation if provided
+    if desired_reservation is not None:
+        state.semantic.desired_reservation = desired_reservation
+
+    # Initialize working memory with goal reservation from semantic memory
     desired = state.semantic.desired_reservation
     state.working.goal_reservation = ReservationDetails(
         date=desired.date,
@@ -88,9 +129,14 @@ def _handle_availability(
         ]
     elif output.availability_status == AvailabilityStatus.SLOT_ACCEPTED:
         state.working.proposed_alternatives = []
+        # Mark date and time as confirmed when slot is accepted
+        workflow.confirmed_fields.date = True
+        workflow.confirmed_fields.time = True
 
     if output.availability_status == AvailabilityStatus.SLOT_ACCEPTED:
         workflow.stage = WorkflowStage.PROVIDE_CONTACT
+        # Set field_under_review to first missing required field
+        _set_next_field_under_review(state)
     elif output.availability_status == AvailabilityStatus.WAITING_ON_STAFF:
         workflow.stage = WorkflowStage.AWAIT_AVAILABILITY
     elif output.availability_status == AvailabilityStatus.ALTERNATIVES_OFFERED:
@@ -102,6 +148,7 @@ def _handle_availability(
 
 
 def _handle_details(state: GlobalMemory, output: "DetailsCollectionOutput") -> None:
+    """Collect reservation details one field at a time."""
     state.append_turn("agent", output.ai_response)
     details_payload = output.reservation_details or ReservationDetails()
     details_payload.contact_name = (
@@ -110,22 +157,37 @@ def _handle_details(state: GlobalMemory, output: "DetailsCollectionOutput") -> N
     details_payload.contact_phone = (
         details_payload.contact_phone or state.semantic.guest_phone
     )
-    state.working.shared_reservation = details_payload
-    state.working.pending_questions = []
     workflow = state.workflow
-    workflow.details_shared = all(
-        [
-            details_payload.date,
-            details_payload.time,
-            details_payload.party_size,
-            details_payload.contact_name,
-            details_payload.contact_phone,
-        ]
-    )
-    if output.needs_menu_dialog:
-        workflow.stage = WorkflowStage.MENU_DISCUSSION
+
+    # Mark confirmed fields based on what was just collected
+    # Only mark the field that was under review
+    field_under_review = state.working.field_under_review
+
+    if field_under_review == "date" and details_payload.date is not None:
+        workflow.confirmed_fields.date = True
+    elif field_under_review == "time" and details_payload.time is not None:
+        workflow.confirmed_fields.time = True
+    elif field_under_review == "party_size" and details_payload.party_size is not None:
+        workflow.confirmed_fields.party_size = True
+    elif field_under_review == "contact_name" and details_payload.contact_name:
+        workflow.confirmed_fields.contact_name = True
+    elif field_under_review == "contact_phone" and details_payload.contact_phone:
+        workflow.confirmed_fields.contact_phone = True
+    elif field_under_review == "occasion" and details_payload.occasion:
+        workflow.confirmed_fields.occasion = True
+    elif field_under_review == "special_requests" and details_payload.special_requests:
+        workflow.confirmed_fields.special_requests = True
+
+    # Move to next stage only when all required fields are confirmed
+    if workflow.confirmed_fields.all_required_confirmed():
+        if output.needs_menu_dialog:
+            workflow.stage = WorkflowStage.MENU_DISCUSSION
+        else:
+            workflow.stage = WorkflowStage.AWAIT_CONFIRMATION
     else:
-        workflow.stage = WorkflowStage.AWAIT_CONFIRMATION
+        # Stay in PROVIDE_CONTACT and set next field under review
+        workflow.stage = WorkflowStage.PROVIDE_CONTACT
+        _set_next_field_under_review(state)
 
 
 def _handle_menu(state: GlobalMemory, output: "MenuDiscussionOutput") -> None:
@@ -150,6 +212,12 @@ def _handle_confirmation(
         workflow.selected_slot_note = output.booking_reference
 
     if output.confirmation_status == ConfirmationStatus.CONFIRMED_BY_STAFF:
+        # Mark all fields as confirmed
+        workflow.confirmed_fields.date = True
+        workflow.confirmed_fields.time = True
+        workflow.confirmed_fields.party_size = True
+        workflow.confirmed_fields.contact_name = True
+        workflow.confirmed_fields.contact_phone = True
         workflow.stage = WorkflowStage.WRAP_UP
         state.working.confirmed_reservation = output.confirmed_reservation
         state.working.pending_questions = []
@@ -159,6 +227,18 @@ def _handle_confirmation(
             [output.error_message] if output.error_message else []
         )
         workflow.blocking_issue = None
+        # Extract which field needs clarification and mark it as not confirmed
+        error_msg = output.error_message or ""
+        if "date" in error_msg.lower():
+            workflow.confirmed_fields.date = False
+        if "time" in error_msg.lower():
+            workflow.confirmed_fields.time = False
+        if "phone" in error_msg.lower():
+            workflow.confirmed_fields.contact_phone = False
+        if "name" in error_msg.lower():
+            workflow.confirmed_fields.contact_name = False
+        # Set field_under_review to the next missing field
+        _set_next_field_under_review(state)
     else:
         workflow.stage = WorkflowStage.AWAIT_CONFIRMATION
 
@@ -173,6 +253,9 @@ def _handle_alternative(
         workflow.availability_status = AvailabilityStatus.SLOT_ACCEPTED
         workflow.stage = WorkflowStage.PROVIDE_CONTACT
         workflow.selected_slot_note = output.accepted_slot_description
+        # Mark date and time as confirmed for the new alternative slot
+        workflow.confirmed_fields.date = True
+        workflow.confirmed_fields.time = True
         state.working.proposed_alternatives = [
             AlternativeOption(
                 description=output.accepted_slot_description,
@@ -180,6 +263,8 @@ def _handle_alternative(
                 accepted=True,
             )
         ]
+        # Set field_under_review to next missing field
+        _set_next_field_under_review(state)
     else:
         workflow.availability_status = AvailabilityStatus.ALTERNATIVES_OFFERED
         if output.should_end_conversation:

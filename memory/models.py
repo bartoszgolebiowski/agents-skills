@@ -48,21 +48,21 @@ class AlternativeOption(BaseModel):
 class CoreMemory(BaseModel):
     """Static identity and guardrails for the guest persona."""
 
-    agent_name: str = "Klara"
+    agent_name: str = "Sarah"
     persona: str = (
-        "Jesteś Klarą Nowak, troskliwą osobą, która chce zarezerwować stolik w Atut Bistro"
-        "Zawsze wypowiadasz się jako gość (nigdy jako personel), udostępniasz jedynie dane osobowe w pamięci i"
-        "odpowiadasz z wdzięcznością, nawet gdy dostępność jest ograniczona. Ogranicz swoje odpowiedzi do maksymalnie dwóch"
-        "zwięzłych zdań i ujawniaj tylko te szczegóły, o które aktualnie pyta personel"
+        "You are Sarah Mitchell, a thoughtful person who wants to book a table at Azure Bistro. "
+        "Always speak as a guest (never as staff), share only personal data from memory, and "
+        "respond with gratitude even when availability is limited. Keep your responses to maximum two "
+        "concise sentences and reveal only details that are currently being asked by staff."
     )
-    languages: List[str] = Field(default_factory=lambda: ["pl", "en"])
+    languages: List[str] = Field(default_factory=lambda: ["en"])
     core_principles: List[str] = Field(
         default_factory=lambda: [
-            "Zawsze mów jako gość i nie udawaj obsługi.",
-            "Dziękuj za każdą odpowiedź i okazuj cierpliwość.",
-            "Nie wymyślaj nowych danych kontaktowych.",
-            "Proś o doprecyzowanie zamiast zgadywać, gdy czegoś nie wiesz.",
-            "Odpowiadaj maksymalnie w dwóch zdaniach i tylko w zakresie informacji, o które proszą.",
+            "Always speak as a guest and never pretend to be staff.",
+            "Thank them for every response and show patience.",
+            "Do not make up new contact information.",
+            "Ask for clarification instead of guessing when you don't know something.",
+            "Respond in maximum two sentences and only within the scope of what is being asked.",
         ]
     )
 
@@ -73,39 +73,79 @@ class DesiredReservation(BaseModel):
     date: dt_date = Field(default_factory=lambda: dt_date.today() + timedelta(days=1))
     time: dt_time = dt_time(hour=19, minute=0)
     party_size: int = 2
-    occasion: Optional[str] = "kolacja"
-    special_requests: Optional[str] = "stolik blisko okna"
+    occasion: Optional[str] = "dinner"
+    special_requests: Optional[str] = "table near window"
 
 
 class SemanticMemory(BaseModel):
     """Long-term knowledge the guest relies on."""
 
-    restaurant_name: str = "Atut Bistro"
-    guest_name: str = "Klara Nowak"
-    guest_phone: str = "+48123123123"
-    celebration_reason: str = "rocznica"
+    restaurant_name: str = "Azure Bistro"
+    guest_name: str = "Sarah Mitchell"
+    guest_phone: str = "+1-555-123-4567"
+    celebration_reason: str = "anniversary"
     favorite_dishes: List[str] = Field(
         default_factory=lambda: [
-            "Tatar z łososia",
-            "Risotto z kurkami",
-            "Suflet czekoladowy",
+            "Salmon Tartare",
+            "Wild Mushroom Risotto",
+            "Chocolate Soufflé",
         ]
     )
-    dietary_notes: Optional[str] = "bez laktozy"
+    dietary_notes: Optional[str] = "lactose-free"
     talking_points: List[str] = Field(
         default_factory=lambda: [
-            "Uwielbiam kameralny ogródek Atut Bistro.",
-            "Słyszałam rewelacje o autorskim menu degustacyjnym.",
+            "I love the intimate garden at Azure Bistro.",
+            "I heard great things about their signature tasting menu.",
         ]
     )
     desired_reservation: DesiredReservation = Field(default_factory=DesiredReservation)
     fallback_slots: List[str] = Field(
         default_factory=lambda: [
-            "jutro 18:00",
-            "jutro 20:30",
-            "za dwa dni 19:00",
+            "tomorrow 6:00 PM",
+            "tomorrow 8:30 PM",
+            "day after tomorrow 7:00 PM",
         ]
     )
+
+    @classmethod
+    def create(
+        cls,
+        restaurant_name: str = "Azure Bistro",
+        guest_name: str = "Sarah Mitchell",
+        guest_phone: str = "+1-555-123-4567",
+        celebration_reason: str = "anniversary",
+        favorite_dishes: Optional[List[str]] = None,
+        dietary_notes: Optional[str] = "lactose-free",
+        talking_points: Optional[List[str]] = None,
+        desired_reservation: Optional[DesiredReservation] = None,
+        fallback_slots: Optional[List[str]] = None,
+    ) -> SemanticMemory:
+        """Factory method to create SemanticMemory with custom values."""
+        return cls(
+            restaurant_name=restaurant_name,
+            guest_name=guest_name,
+            guest_phone=guest_phone,
+            celebration_reason=celebration_reason,
+            favorite_dishes=favorite_dishes
+            or [
+                "Salmon Tartare",
+                "Wild Mushroom Risotto",
+                "Chocolate Soufflé",
+            ],
+            dietary_notes=dietary_notes,
+            talking_points=talking_points
+            or [
+                "I love the intimate garden at Azure Bistro.",
+                "I heard great things about their signature tasting menu.",
+            ],
+            desired_reservation=desired_reservation or DesiredReservation(),
+            fallback_slots=fallback_slots
+            or [
+                "tomorrow 6:00 PM",
+                "tomorrow 8:30 PM",
+                "day after tomorrow 7:00 PM",
+            ],
+        )
 
 
 class EpisodicMemory(BaseModel):
@@ -114,13 +154,39 @@ class EpisodicMemory(BaseModel):
     events: List[str] = Field(default_factory=list)
 
 
+class ConfirmedFields(BaseModel):
+    """Tracks which reservation fields have been explicitly confirmed by staff."""
+
+    date: bool = False
+    time: bool = False
+    party_size: bool = False
+    occasion: bool = False
+    special_requests: bool = False
+    contact_name: bool = False
+    contact_phone: bool = False
+
+    def all_required_confirmed(self) -> bool:
+        """Check if all fields (date, time, party_size, occasion, special_requests, contact_name, contact_phone) are confirmed."""
+        return all(
+            [
+                self.date,
+                self.time,
+                self.party_size,
+                self.occasion,
+                self.special_requests,
+                self.contact_name,
+                self.contact_phone,
+            ]
+        )
+
+
 class WorkflowMemory(BaseModel):
     """Guest-centric state flags that drive the coordinator."""
 
     stage: WorkflowStage = WorkflowStage.INTRO
     availability_status: AvailabilityStatus = AvailabilityStatus.UNKNOWN
     confirmation_status: ConfirmationStatus = ConfirmationStatus.PENDING
-    details_shared: bool = False
+    confirmed_fields: ConfirmedFields = Field(default_factory=ConfirmedFields)
     blocking_issue: Optional[str] = None
     selected_slot_note: Optional[str] = None
 
@@ -132,7 +198,6 @@ class WorkingMemory(BaseModel):
     last_user_message: Optional[str] = None
     last_ai_message: Optional[str] = None
     goal_reservation: ReservationDetails = Field(default_factory=ReservationDetails)
-    shared_reservation: ReservationDetails = Field(default_factory=ReservationDetails)
     confirmed_reservation: ReservationDetails = Field(
         default_factory=ReservationDetails
     )
@@ -140,6 +205,7 @@ class WorkingMemory(BaseModel):
     menu_preferences: MenuPreferences = Field(default_factory=MenuPreferences)
     proposed_alternatives: List[AlternativeOption] = Field(default_factory=list)
     pending_questions: List[str] = Field(default_factory=list)
+    field_under_review: Optional[str] = "date"
 
 
 class GlobalMemory(BaseModel):
