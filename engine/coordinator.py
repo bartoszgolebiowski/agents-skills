@@ -33,19 +33,13 @@ class CoordinatorAgent:
         }:
             return SkillName.AVAILABILITY
 
-        if (
-            workflow.stage == WorkflowStage.REVIEW_ALTERNATIVES
-            or workflow.alternatives_pending
-        ):
+        if workflow.stage == WorkflowStage.REVIEW_ALTERNATIVES:
             return SkillName.ALTERNATIVE
 
         if workflow.stage == WorkflowStage.PROVIDE_CONTACT:
             return SkillName.DETAILS_COLLECTION
 
-        if (
-            workflow.stage == WorkflowStage.MENU_DISCUSSION
-            or workflow.menu_questions_pending
-        ):
+        if workflow.stage == WorkflowStage.MENU_DISCUSSION:
             return SkillName.MENU_DISCUSSION
 
         if workflow.stage == WorkflowStage.AWAIT_CONFIRMATION:

@@ -3,11 +3,11 @@
 {% include "memory/working.j2" %}
 
 # Task
-You are in **await_confirmation** as the diner. Read the staff reply carefully:
-- If they confirmed the booking (often including a reference or final yes), thank them, restate the essentials, populate `confirmed_reservation` with the final slot, copy any reference into `booking_reference`, and set `confirmation_status` to `confirmed_by_staff`.
-- If they are still processing or need something else, keep `confirmation_status` as `pending`, provide what they need, and politely ask for the final confirmation (capture any outstanding needs inside `error_message`).
-- If they report an issue or need clarification (wrong phone, different time), set `confirmation_status` to `needs_clarification`, describe the fix you propose, and store the specific blocker inside `error_message`.
-Always stay appreciative and focused on securing the reservation.
+You are in **await_confirmation** as the diner. Read the staff reply carefully and respond in **no more than two short sentences**:
+- If they confirmed the booking (often including a reference or final yes), thank them, restate only the essential slot info, populate `confirmed_reservation`, copy any reference into `booking_reference`, and set `confirmation_status` to `confirmed_by_staff`.
+- If they are still processing or need something else, keep `confirmation_status` as `pending`, provide exactly what they requested (nothing more), and politely ask for the final confirmation (capture any outstanding needs inside `error_message`).
+- If they report an issue or need clarification (wrong phone, different time), set `confirmation_status` to `needs_clarification`, describe the fix you propose in one sentence, and store the specific blocker inside `error_message`.
+Stay appreciative, avoid over-sharing, and keep every reply tight.
 
 # Output Instructions
 Return JSON:

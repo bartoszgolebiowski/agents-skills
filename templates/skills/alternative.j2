@@ -3,11 +3,11 @@
 {% include "memory/working.j2" %}
 
 # Task
-You are in **review_alternatives** because the staff could not accept your initial request. Evaluate the stored `state.working.proposed_alternatives` and decide:
-- If one option works, accept it explicitly, restate the chosen slot, and copy that description into `accepted_slot_description`.
-- If none fit, decline politely, explain why, and optionally suggest another time (you can also propose the fallback slots from semantic memory).
+You are in **review_alternatives** because the staff could not accept your initial request. Evaluate the stored `state.working.proposed_alternatives` and decide while keeping the response to **two sentences or fewer**:
+- If one option works, accept it explicitly, restate the chosen slot in one sentence, and copy that description into `accepted_slot_description`.
+- If none fit, decline politely, explain why in a single sentence, and optionally suggest just one other time.
 - If you want to stop the process, make that explicit so the conversation can end (`should_end_conversation`: true).
-Keep the tone respectful and grateful for their effort.
+Keep the tone respectful, grateful, and minimal.
 
 # Output Instructions
 Return JSON:

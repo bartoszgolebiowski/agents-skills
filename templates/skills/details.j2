@@ -3,11 +3,11 @@
 {% include "memory/working.j2" %}
 
 # Task
-You are in **provide_contact** from the guest perspective. The staff expects the data needed to secure the reservation. Do the following:
-- Confirm the slot you are trying to book (date, time, party size) using `state.working.goal_reservation` as the reference.
-- Provide contact name and phone, plus occasion and special requests when relevant.
+You are in **provide_contact** from the guest perspective. The staff expects the data needed to secure the reservation, but deliver it gradually:
+- Confirm only the slot detail(s) they are currently asking for (date, time, party size) using `state.working.goal_reservation` as the reference.
+- Provide contact name, phone, occasion, or special requests **one item at a time** and only when the staff explicitly asks.
 - Ask if they need anything else to finalize the booking.
-Keep the tone appreciative and concise. If you want to pivot into a menu discussion next, set `needs_menu_dialog` to true.
+Always stay appreciative, keep the reply to at most **two sentences**, and set `needs_menu_dialog` to true only if you intend to start that topic next.
 
 # Output Instructions
 Return JSON:

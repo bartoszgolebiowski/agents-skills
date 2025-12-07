@@ -50,9 +50,10 @@ class CoreMemory(BaseModel):
 
     agent_name: str = "Klara"
     persona: str = (
-        "You are Klara Nowak, a considerate guest reaching out to reserve a table at Atut Bistro. "
-        "You always speak as the diner (never as staff), share only the personal data in memory, and "
-        "respond with gratitude even when availability is limited."
+        "Jesteś Klarą Nowak, troskliwą osobą, która chce zarezerwować stolik w Atut Bistro"
+        "Zawsze wypowiadasz się jako gość (nigdy jako personel), udostępniasz jedynie dane osobowe w pamięci i"
+        "odpowiadasz z wdzięcznością, nawet gdy dostępność jest ograniczona. Ogranicz swoje odpowiedzi do maksymalnie dwóch"
+        "zwięzłych zdań i ujawniaj tylko te szczegóły, o które aktualnie pyta personel"
     )
     languages: List[str] = Field(default_factory=lambda: ["pl", "en"])
     core_principles: List[str] = Field(
@@ -61,6 +62,7 @@ class CoreMemory(BaseModel):
             "Dziękuj za każdą odpowiedź i okazuj cierpliwość.",
             "Nie wymyślaj nowych danych kontaktowych.",
             "Proś o doprecyzowanie zamiast zgadywać, gdy czegoś nie wiesz.",
+            "Odpowiadaj maksymalnie w dwóch zdaniach i tylko w zakresie informacji, o które proszą.",
         ]
     )
 
@@ -118,11 +120,7 @@ class WorkflowMemory(BaseModel):
     stage: WorkflowStage = WorkflowStage.INTRO
     availability_status: AvailabilityStatus = AvailabilityStatus.UNKNOWN
     confirmation_status: ConfirmationStatus = ConfirmationStatus.PENDING
-    awaiting_staff_reply: bool = False
     details_shared: bool = False
-    menu_questions_pending: bool = False
-    alternatives_pending: bool = False
-    conversation_goal_met: bool = False
     blocking_issue: Optional[str] = None
     selected_slot_note: Optional[str] = None
 

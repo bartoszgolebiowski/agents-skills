@@ -68,7 +68,6 @@ def apply_skill_output(
 def _handle_greeting(state: GlobalMemory, output: "GreetingSkillOutput") -> None:
     state.append_turn("agent", output.ai_response)
     state.workflow.stage = WorkflowStage.SHARE_PREFERENCES
-    state.workflow.awaiting_staff_reply = True
     state.working.pending_questions = []
 
 
@@ -79,8 +78,6 @@ def _handle_availability(
     workflow = state.workflow
     workflow.availability_status = output.availability_status
     workflow.selected_slot_note = output.selected_slot_note
-    workflow.awaiting_staff_reply = False
-    workflow.alternatives_pending = False
     workflow.blocking_issue = None
     state.working.pending_questions = output.pending_questions
 
@@ -96,13 +93,10 @@ def _handle_availability(
         workflow.stage = WorkflowStage.PROVIDE_CONTACT
     elif output.availability_status == AvailabilityStatus.WAITING_ON_STAFF:
         workflow.stage = WorkflowStage.AWAIT_AVAILABILITY
-        workflow.awaiting_staff_reply = True
     elif output.availability_status == AvailabilityStatus.ALTERNATIVES_OFFERED:
         workflow.stage = WorkflowStage.REVIEW_ALTERNATIVES
-        workflow.alternatives_pending = True
     elif output.availability_status == AvailabilityStatus.DECLINED:
         workflow.stage = WorkflowStage.REVIEW_ALTERNATIVES
-        workflow.alternatives_pending = bool(output.suggested_alternatives)
     else:
         workflow.stage = WorkflowStage.SHARE_PREFERENCES
 
@@ -128,24 +122,17 @@ def _handle_details(state: GlobalMemory, output: "DetailsCollectionOutput") -> N
             details_payload.contact_phone,
         ]
     )
-    workflow.menu_questions_pending = output.needs_menu_dialog
     if output.needs_menu_dialog:
         workflow.stage = WorkflowStage.MENU_DISCUSSION
-        workflow.awaiting_staff_reply = False
     else:
         workflow.stage = WorkflowStage.AWAIT_CONFIRMATION
-        workflow.awaiting_staff_reply = True
 
 
 def _handle_menu(state: GlobalMemory, output: "MenuDiscussionOutput") -> None:
     state.append_turn("agent", output.ai_response)
     state.working.menu_preferences = output.menu_preferences
     workflow = state.workflow
-    workflow.menu_questions_pending = output.next_stage == WorkflowStage.MENU_DISCUSSION
     workflow.stage = output.next_stage
-    workflow.awaiting_staff_reply = (
-        output.next_stage == WorkflowStage.AWAIT_CONFIRMATION
-    )
 
 
 def _handle_confirmation(
@@ -164,20 +151,16 @@ def _handle_confirmation(
 
     if output.confirmation_status == ConfirmationStatus.CONFIRMED_BY_STAFF:
         workflow.stage = WorkflowStage.WRAP_UP
-        workflow.conversation_goal_met = True
-        workflow.awaiting_staff_reply = False
         state.working.confirmed_reservation = output.confirmed_reservation
         state.working.pending_questions = []
     elif output.confirmation_status == ConfirmationStatus.NEEDS_CLARIFICATION:
         workflow.stage = WorkflowStage.PROVIDE_CONTACT
-        workflow.awaiting_staff_reply = False
         state.working.pending_questions = (
             [output.error_message] if output.error_message else []
         )
         workflow.blocking_issue = None
     else:
         workflow.stage = WorkflowStage.AWAIT_CONFIRMATION
-        workflow.awaiting_staff_reply = True
 
 
 def _handle_alternative(
@@ -185,12 +168,9 @@ def _handle_alternative(
 ) -> None:
     state.append_turn("agent", output.ai_response)
     workflow = state.workflow
-    workflow.awaiting_staff_reply = False
-    workflow.alternatives_pending = False
 
     if output.alternative_selected and output.accepted_slot_description:
         workflow.availability_status = AvailabilityStatus.SLOT_ACCEPTED
-        workflow.alternatives_pending = False
         workflow.stage = WorkflowStage.PROVIDE_CONTACT
         workflow.selected_slot_note = output.accepted_slot_description
         state.working.proposed_alternatives = [
@@ -206,7 +186,6 @@ def _handle_alternative(
             workflow.stage = WorkflowStage.END
         else:
             workflow.stage = WorkflowStage.AWAIT_AVAILABILITY
-            workflow.awaiting_staff_reply = True
 
 
 def _handle_error_recovery(state: GlobalMemory, output: "ErrorRecoveryOutput") -> None:
@@ -214,7 +193,6 @@ def _handle_error_recovery(state: GlobalMemory, output: "ErrorRecoveryOutput") -
     state.workflow.stage = output.reset_stage
     state.workflow.blocking_issue = None
     state.workflow.confirmation_status = ConfirmationStatus.PENDING
-    state.workflow.awaiting_staff_reply = False
 
 
 _HANDLERS: Dict[SkillName, UpdateHandler] = {
