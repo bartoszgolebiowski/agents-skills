@@ -15,6 +15,7 @@ class WorkflowStage(str, Enum):
     PROVIDE_CONTACT = "provide_contact"
     MENU_DISCUSSION = "menu_discussion"
     AWAIT_CONFIRMATION = "await_confirmation"
+    SAVE_DATA = "save_data"
     WRAP_UP = "wrap_up"
     END = "end"
 
@@ -47,3 +48,22 @@ class SkillName(str, Enum):
     CONFIRMATION = "skill.confirmation"
     ALTERNATIVE = "skill.alternative"
     ERROR_RECOVERY = "skill.error_recovery"
+    SAVE_RESERVATION = "skill.save_reservation"
+
+
+class DiscussionTopic(str, Enum):
+    """Tracks the current conversational focus."""
+
+    GREETING = "greeting"
+    CONFIRMING_AVAILABILITY = "confirming availability"
+    CONFIRMING_DATE = "confirming date"
+    CONFIRMING_TIME = "confirming time"
+    CONFIRMING_PARTY_SIZE = "confirming party size"
+    CONFIRMING_SPECIAL_REQUESTS = "confirming special requests"
+    CONFIRMING_CONTACT_DETAILS = "confirming contact details"
+    CONFIRMING_OCCASION = "confirming occasion"
+    MENU_DISCUSSION = "menu discussion"
+    CONFIRMATION = "awaiting final confirmation"
+    CLOSING = "closing the reservation"
+    ERROR_RECOVERY = "resolving an issue"
+    NONE = "no specific topic"

@@ -47,5 +47,8 @@ class CoordinatorAgent:
                 return SkillName.DETAILS_COLLECTION
             return SkillName.CONFIRMATION
 
+        if workflow.stage == WorkflowStage.SAVE_DATA:
+            return SkillName.SAVE_RESERVATION
+
         # Default fallback ensures we never get stuck.
         return SkillName.GREETING

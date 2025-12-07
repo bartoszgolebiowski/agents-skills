@@ -3,9 +3,6 @@
 {% endfor %}{% else %}- none
 {% endif %}
 
-## Field Under Review
-- current_field: {{ state.working.field_under_review or "none" }}
-
 ## Reservation Goal
 - date: {{ state.working.goal_reservation.date or "unknown" }}
 - time: {{ state.working.goal_reservation.time or "unknown" }}
@@ -27,7 +24,7 @@
 - dietary_notes: {{ state.working.menu_preferences.dietary_notes or "none" }}
 
 ## Staff Feedback
-- latest_message: {{ state.working.staff_feedback or "none" }}
+- latest_message: {{ state.working.last_ai_message or "none" }}
 - pending_questions:
 {% if state.working.pending_questions %}{% for question in state.working.pending_questions %}- {{ question }}
 {% endfor %}{% else %}- none

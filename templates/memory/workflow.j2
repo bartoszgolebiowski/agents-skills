@@ -1,5 +1,6 @@
 ## Workflow State
 - stage: {{ state.workflow.stage }}
+- current_topic: {{ state.workflow.current_topic.value }}
 - availability_status: {{ state.workflow.availability_status }}
 - confirmation_status: {{ state.workflow.confirmation_status }}
 - confirmed_fields:
@@ -10,6 +11,8 @@
   - special_requests: {{ state.workflow.confirmed_fields.special_requests }}
   - contact_name: {{ state.workflow.confirmed_fields.contact_name }}
   - contact_phone: {{ state.workflow.confirmed_fields.contact_phone }}
+- missing_explicit_confirmations: {% if state.workflow.missing_explicit_confirmations %}{{ state.workflow.missing_explicit_confirmations | join(", ") }}{% else %}none{% endif %}
 - all_required_confirmed: {{ state.workflow.confirmed_fields.all_required_confirmed() }}
 - blocking_issue: {{ state.workflow.blocking_issue or "none" }}
 - selected_slot_note: {{ state.workflow.selected_slot_note or "none" }}
+- saved_file_path: {{ state.workflow.saved_file_path or "pending" }}

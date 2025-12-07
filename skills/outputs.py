@@ -27,6 +27,7 @@ class AvailabilitySkillOutput(SkillOutput):
     suggested_alternatives: List[str] = Field(default_factory=list)
     selected_slot_note: Optional[str] = None
     pending_questions: List[str] = Field(default_factory=list)
+    special_request_rejected: bool = False
 
 
 class DetailsCollectionOutput(SkillOutput):
@@ -66,3 +67,9 @@ class ErrorRecoveryOutput(SkillOutput):
     """Guides the state machine back to a safe point after failures."""
 
     reset_stage: WorkflowStage = WorkflowStage.SHARE_PREFERENCES
+
+
+class SaveReservationOutput(SkillOutput):
+    """Final acknowledgement once reservation details are stored."""
+
+    follow_up_needed: bool = False

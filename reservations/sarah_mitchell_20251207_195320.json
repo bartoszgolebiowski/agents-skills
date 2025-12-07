@@ -1,0 +1,101 @@
+{
+  "generated_at": "2025-12-07T19:53:20Z",
+  "guest": {
+    "name": "Sarah Mitchell",
+    "phone": "+1-555-123-4567"
+  },
+  "restaurant": "La Petite Table",
+  "workflow": {
+    "stage": "save_data",
+    "availability_status": "slot_accepted",
+    "confirmation_status": "confirmed_by_staff",
+    "selected_slot_note": "2025-12-08 at 19:00 for 2"
+  },
+  "goal_reservation": {
+    "date": "2025-12-08",
+    "time": "19:00",
+    "party_size": 2,
+    "occasion": "dinner",
+    "special_requests": "the steak must be rare",
+    "contact_name": "Sarah Mitchell",
+    "contact_phone": "+1-555-123-4567"
+  },
+  "confirmed_reservation": {
+    "date": "2025-12-08",
+    "time": "19:00",
+    "party_size": 2,
+    "occasion": "dinner",
+    "special_requests": "the steak must be rare",
+    "contact_name": "Sarah Mitchell",
+    "contact_phone": "+1-555-123-4567"
+  },
+  "menu_preferences": {
+    "requested": false,
+    "highlights": [],
+    "dietary_notes": null
+  },
+  "conversation_summary": {
+    "turns": [
+      {
+        "speaker": "agent",
+        "message": "Hello, I'm Sarah Mitchell. I'd like to reserve a table at La Petite Table. Can you assist with the booking right now? Thank you!"
+      },
+      {
+        "speaker": "user",
+        "message": "yes"
+      },
+      {
+        "speaker": "agent",
+        "message": "Thank you for confirming you can assist! I'd like a table for 2 on 2025-12-08 at 19:00 for dinner, with the steak rare please."
+      },
+      {
+        "speaker": "user",
+        "message": "yes we have slot"
+      },
+      {
+        "speaker": "agent",
+        "message": "Thank you for confirming the slot is available! Can you please confirm if the steak can be served rare as requested?"
+      },
+      {
+        "speaker": "user",
+        "message": "yes i can confirm that"
+      },
+      {
+        "speaker": "agent",
+        "message": "Thank you for confirming the steak can be served rare! Party size is 2, my name is Sarah Mitchell, phone +1-555-123-4567, for dinner with steak rare."
+      },
+      {
+        "speaker": "user",
+        "message": "thanks for repeating it"
+      },
+      {
+        "speaker": "agent",
+        "message": "Thank you for acknowledging the details! Can you please provide the final confirmation or booking reference for our reservation on 2025-12-08 at 19:00 for 2 with rare steak?"
+      },
+      {
+        "speaker": "user",
+        "message": "yes"
+      },
+      {
+        "speaker": "agent",
+        "message": "Thank you for your response! Could you please provide the final confirmation or booking reference for our reservation on 2025-12-08 at 19:00 for 2 with rare steak?"
+      },
+      {
+        "speaker": "user",
+        "message": "yes it is true"
+      },
+      {
+        "speaker": "agent",
+        "message": "Thank you for confirming! I'm excited for our reservation on 2025-12-08 at 19:00 for 2 with the steak rare."
+      },
+      {
+        "speaker": "user",
+        "message": "ok"
+      },
+      {
+        "speaker": "agent",
+        "message": "Thank you for confirming our reservation on 2025-12-08 at 19:00 for 2 with the steak rare. Have a great evening!"
+      }
+    ]
+  }
+}

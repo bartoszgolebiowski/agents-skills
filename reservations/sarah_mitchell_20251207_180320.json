@@ -1,0 +1,157 @@
+{
+  "generated_at": "2025-12-07T18:03:20Z",
+  "guest": {
+    "name": "Sarah Mitchell",
+    "phone": "+1-555-123-4567"
+  },
+  "restaurant": "Azure Bistro",
+  "workflow": {
+    "stage": "save_data",
+    "availability_status": "slot_accepted",
+    "confirmation_status": "confirmed_by_staff",
+    "selected_slot_note": "December 8th at 8 PM for 4 people"
+  },
+  "goal_reservation": {
+    "date": "2025-12-08",
+    "time": "19:00",
+    "party_size": 4,
+    "occasion": "dinner",
+    "special_requests": "table near the window with sunset view",
+    "contact_name": "Sarah Mitchell",
+    "contact_phone": "+1-555-123-4567"
+  },
+  "confirmed_reservation": {
+    "date": "2025-12-08",
+    "time": "20:00",
+    "party_size": 4,
+    "occasion": "dinner",
+    "special_requests": "table near the window with sunset view",
+    "contact_name": "Sarah Mitchell",
+    "contact_phone": "+1-555-123-4567"
+  },
+  "menu_preferences": {
+    "requested": false,
+    "highlights": [],
+    "dietary_notes": null
+  },
+  "conversation_summary": {
+    "turns": [
+      {
+        "speaker": "agent",
+        "message": "Hello, I'm Sarah Mitchell. I'd like to reserve a table at Azure Bistro. Can you assist me with a booking?"
+      },
+      {
+        "speaker": "user",
+        "message": "hey good morning, sure go ahead"
+      },
+      {
+        "speaker": "agent",
+        "message": "Thank you for your response! Could you please check availability for December 8th at 7 PM for 4 people, with a table near the window for sunset view?"
+      },
+      {
+        "speaker": "user",
+        "message": "tats a lot of requirmenets, hmm, december 8th 7pm is not available"
+      },
+      {
+        "speaker": "agent",
+        "message": "Thank you for checking! Do you have any alternative times available on December 8th for 4 people, or perhaps tomorrow at 6 PM or 8:30 PM?"
+      },
+      {
+        "speaker": "user",
+        "message": "hmm, its seems at 8pm we have for 4 people"
+      },
+      {
+        "speaker": "agent",
+        "message": "Thank you for the update! 8 PM on December 8th for 4 people works perfectly for us."
+      },
+      {
+        "speaker": "user",
+        "message": "amazing, do you want to have it?"
+      },
+      {
+        "speaker": "agent",
+        "message": "Yes, 4 people."
+      },
+      {
+        "speaker": "user",
+        "message": "ok"
+      },
+      {
+        "speaker": "agent",
+        "message": "Sarah Mitchell."
+      },
+      {
+        "speaker": "user",
+        "message": "ok perfect"
+      },
+      {
+        "speaker": "agent",
+        "message": "My phone number is +1-555-123-4567."
+      },
+      {
+        "speaker": "user",
+        "message": "ok"
+      },
+      {
+        "speaker": "agent",
+        "message": "It's a dinner."
+      },
+      {
+        "speaker": "user",
+        "message": "okkk"
+      },
+      {
+        "speaker": "agent",
+        "message": "I'd like a table near the window with a sunset view, thank you."
+      },
+      {
+        "speaker": "user",
+        "message": "at 8pm there is not sunset"
+      },
+      {
+        "speaker": "agent",
+        "message": "Thank you for letting me know. That's okay, please proceed with the booking for December 8th at 8 PM for 4 people."
+      },
+      {
+        "speaker": "user",
+        "message": "ok"
+      },
+      {
+        "speaker": "agent",
+        "message": "Thank you for confirming! Please proceed with the booking for December 8th at 8 PM for 4 people."
+      },
+      {
+        "speaker": "user",
+        "message": "ok"
+      },
+      {
+        "speaker": "agent",
+        "message": "Thank you for confirming! Please proceed with the booking for December 8th at 8 PM for 4 people."
+      },
+      {
+        "speaker": "user",
+        "message": "ok"
+      },
+      {
+        "speaker": "agent",
+        "message": "Thank you for confirming! Please proceed with the booking for December 8th at 8 PM for 4 people."
+      },
+      {
+        "speaker": "user",
+        "message": "its done"
+      },
+      {
+        "speaker": "agent",
+        "message": "Thank you so much, that's perfect! I've noted the booking for December 8th at 8 PM for 4 people."
+      },
+      {
+        "speaker": "user",
+        "message": "ok bye"
+      },
+      {
+        "speaker": "agent",
+        "message": "Thank you so much for confirming the booking! I've saved the details for December 8th at 8 PM for 4 people and look forward to dining at Azure Bistro."
+      }
+    ]
+  }
+}

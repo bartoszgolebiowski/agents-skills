@@ -51,6 +51,12 @@ _SKILLS: Dict[SkillName, Skill] = {
         output_model=outputs.ErrorRecoveryOutput,
         description="Recover from booking errors and restart the request if needed.",
     ),
+    SkillName.SAVE_RESERVATION: Skill(
+        name=SkillName.SAVE_RESERVATION,
+        template_path="skills/save.j2",
+        output_model=outputs.SaveReservationOutput,
+        description="Acknowledge the saved reservation details and close politely.",
+    ),
 }
 
 

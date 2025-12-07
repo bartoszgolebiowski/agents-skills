@@ -60,10 +60,8 @@ class ReservationAgent:
             return "Rezerwacja została już zakończona."
 
         last_user_message = self._state.working.last_user_message or ""
-        print(f"[DEBUG] State before: {self._state.model_dump_json()}")
         output = self._executor.run(skill_name, self._state, last_user_message)
         self._state = apply_skill_output(self._state, skill_name, output)
-        print(f"[DEBUG] State after: {self._state.model_dump_json()}")
         return output.ai_response  # type: ignore
 
     def run_until_done(self) -> list[str]:

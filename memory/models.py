@@ -7,7 +7,12 @@ from typing import List, Optional
 
 from pydantic import BaseModel, Field
 
-from shared.enums import AvailabilityStatus, ConfirmationStatus, WorkflowStage
+from shared.enums import (
+    AvailabilityStatus,
+    ConfirmationStatus,
+    DiscussionTopic,
+    WorkflowStage,
+)
 
 
 class ConversationTurn(BaseModel):
@@ -73,49 +78,32 @@ class DesiredReservation(BaseModel):
     date: dt_date = Field(default_factory=lambda: dt_date.today() + timedelta(days=1))
     time: dt_time = dt_time(hour=19, minute=0)
     party_size: int = 2
-    occasion: Optional[str] = "dinner"
-    special_requests: Optional[str] = "table near window"
+    occasion: Optional[str] = ""
+    special_requests: Optional[str] = ""
 
 
 class SemanticMemory(BaseModel):
     """Long-term knowledge the guest relies on."""
 
-    restaurant_name: str = "Azure Bistro"
-    guest_name: str = "Sarah Mitchell"
-    guest_phone: str = "+1-555-123-4567"
-    celebration_reason: str = "anniversary"
-    favorite_dishes: List[str] = Field(
-        default_factory=lambda: [
-            "Salmon Tartare",
-            "Wild Mushroom Risotto",
-            "Chocolate Soufflé",
-        ]
-    )
-    dietary_notes: Optional[str] = "lactose-free"
-    talking_points: List[str] = Field(
-        default_factory=lambda: [
-            "I love the intimate garden at Azure Bistro.",
-            "I heard great things about their signature tasting menu.",
-        ]
-    )
+    restaurant_name: str = ""
+    guest_name: str = ""
+    guest_phone: str = ""
+    celebration_reason: str = ""
+    favorite_dishes: List[str] = Field(default_factory=lambda: [])
+    dietary_notes: Optional[str] = ""
+    talking_points: List[str] = Field(default_factory=lambda: [])
     desired_reservation: DesiredReservation = Field(default_factory=DesiredReservation)
-    fallback_slots: List[str] = Field(
-        default_factory=lambda: [
-            "tomorrow 6:00 PM",
-            "tomorrow 8:30 PM",
-            "day after tomorrow 7:00 PM",
-        ]
-    )
+    fallback_slots: List[str] = Field(default_factory=lambda: [])
 
     @classmethod
     def create(
         cls,
-        restaurant_name: str = "Azure Bistro",
-        guest_name: str = "Sarah Mitchell",
-        guest_phone: str = "+1-555-123-4567",
-        celebration_reason: str = "anniversary",
+        restaurant_name: str = "",
+        guest_name: str = "",
+        guest_phone: str = "",
+        celebration_reason: str = "",
         favorite_dishes: Optional[List[str]] = None,
-        dietary_notes: Optional[str] = "lactose-free",
+        dietary_notes: Optional[str] = "",
         talking_points: Optional[List[str]] = None,
         desired_reservation: Optional[DesiredReservation] = None,
         fallback_slots: Optional[List[str]] = None,
@@ -126,25 +114,11 @@ class SemanticMemory(BaseModel):
             guest_name=guest_name,
             guest_phone=guest_phone,
             celebration_reason=celebration_reason,
-            favorite_dishes=favorite_dishes
-            or [
-                "Salmon Tartare",
-                "Wild Mushroom Risotto",
-                "Chocolate Soufflé",
-            ],
+            favorite_dishes=favorite_dishes or [],
             dietary_notes=dietary_notes,
-            talking_points=talking_points
-            or [
-                "I love the intimate garden at Azure Bistro.",
-                "I heard great things about their signature tasting menu.",
-            ],
+            talking_points=talking_points or [],
             desired_reservation=desired_reservation or DesiredReservation(),
-            fallback_slots=fallback_slots
-            or [
-                "tomorrow 6:00 PM",
-                "tomorrow 8:30 PM",
-                "day after tomorrow 7:00 PM",
-            ],
+            fallback_slots=fallback_slots or [],
         )
 
 
@@ -187,8 +161,11 @@ class WorkflowMemory(BaseModel):
     availability_status: AvailabilityStatus = AvailabilityStatus.UNKNOWN
     confirmation_status: ConfirmationStatus = ConfirmationStatus.PENDING
     confirmed_fields: ConfirmedFields = Field(default_factory=ConfirmedFields)
+    missing_explicit_confirmations: List[str] = Field(default_factory=list)
     blocking_issue: Optional[str] = None
     selected_slot_note: Optional[str] = None
+    saved_file_path: Optional[str] = None
+    current_topic: DiscussionTopic = DiscussionTopic.NONE
 
 
 class WorkingMemory(BaseModel):
@@ -201,11 +178,9 @@ class WorkingMemory(BaseModel):
     confirmed_reservation: ReservationDetails = Field(
         default_factory=ReservationDetails
     )
-    staff_feedback: Optional[str] = None
     menu_preferences: MenuPreferences = Field(default_factory=MenuPreferences)
     proposed_alternatives: List[AlternativeOption] = Field(default_factory=list)
     pending_questions: List[str] = Field(default_factory=list)
-    field_under_review: Optional[str] = "date"
 
 
 class GlobalMemory(BaseModel):
@@ -223,6 +198,5 @@ class GlobalMemory(BaseModel):
         self.working.turns.append(ConversationTurn(speaker=speaker, message=message))
         if speaker == "user":
             self.working.last_user_message = message
-            self.working.staff_feedback = message
         else:
             self.working.last_ai_message = message

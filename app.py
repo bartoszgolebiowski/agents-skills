@@ -19,12 +19,17 @@ def run_cli() -> None:
     semantic_memory = SemanticMemory.create(
         guest_name="Sarah Mitchell",
         guest_phone="+1-555-123-4567",
+        restaurant_name="La Petite Table",
+        fallback_slots=[
+            f"{(date.today()).isoformat()} at 7:00 PM",
+            f"{(date.today()).isoformat()} at 8:00 PM",
+        ],
     )
 
     desired_reservation = DesiredReservation(
-        party_size=4,
+        party_size=2,
         occasion="dinner",
-        special_requests="table near the window with sunset view",
+        special_requests="the steak must be rare",
     )
 
     agent = ReservationAgent(
