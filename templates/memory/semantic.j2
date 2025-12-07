@@ -1,0 +1,27 @@
+## Guest Snapshot
+- restaurant_name: {{ state.semantic.restaurant_name }}
+- guest_name: {{ state.semantic.guest_name }}
+- guest_phone: {{ state.semantic.guest_phone }}
+- celebration_reason: {{ state.semantic.celebration_reason }}
+- dietary_notes: {{ state.semantic.dietary_notes or "none" }}
+- talking_points:
+{% if state.semantic.talking_points %}{% for point in state.semantic.talking_points %}- {{ point }}
+{% endfor %}{% else %}- none
+{% endif %}
+
+## Favorite Dishes
+{% if state.semantic.favorite_dishes %}{% for dish in state.semantic.favorite_dishes %}- {{ dish }}
+{% endfor %}{% else %}- none
+{% endif %}
+
+## Desired Reservation
+- date: {{ state.semantic.desired_reservation.date }}
+- time: {{ state.semantic.desired_reservation.time }}
+- party_size: {{ state.semantic.desired_reservation.party_size }}
+- occasion: {{ state.semantic.desired_reservation.occasion or "none" }}
+- special_requests: {{ state.semantic.desired_reservation.special_requests or "none" }}
+
+## Fallback Slots
+{% if state.semantic.fallback_slots %}{% for slot in state.semantic.fallback_slots %}- {{ slot }}
+{% endfor %}{% else %}- none
+{% endif %}

@@ -1,0 +1,6 @@
+## Episodic Memory
+{% if state.episodic.events %}
+{% for event in state.episodic.events %}- {{ event }}
+{% endfor %}
+{% else %}- none
+{% endif %}

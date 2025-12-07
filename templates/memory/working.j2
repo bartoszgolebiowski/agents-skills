@@ -1,0 +1,44 @@
+## Conversation Snapshot
+{% if state.working.turns %}{% for turn in state.working.turns[-6:] %}- {{ turn.speaker }}: {{ turn.message }}
+{% endfor %}{% else %}- none
+{% endif %}
+
+## Reservation Goal
+- date: {{ state.working.goal_reservation.date or "unknown" }}
+- time: {{ state.working.goal_reservation.time or "unknown" }}
+- party_size: {{ state.working.goal_reservation.party_size or "unknown" }}
+- occasion: {{ state.working.goal_reservation.occasion or "none" }}
+- special_requests: {{ state.working.goal_reservation.special_requests or "none" }}
+- contact_name: {{ state.working.goal_reservation.contact_name or "unknown" }}
+- contact_phone: {{ state.working.goal_reservation.contact_phone or "unknown" }}
+
+## Shared With Staff
+- date: {{ state.working.shared_reservation.date or "unknown" }}
+- time: {{ state.working.shared_reservation.time or "unknown" }}
+- party_size: {{ state.working.shared_reservation.party_size or "unknown" }}
+- occasion: {{ state.working.shared_reservation.occasion or "none" }}
+- contact_name: {{ state.working.shared_reservation.contact_name or "unknown" }}
+- contact_phone: {{ state.working.shared_reservation.contact_phone or "unknown" }}
+- special_requests: {{ state.working.shared_reservation.special_requests or "none" }}
+
+## Confirmed Slot
+- date: {{ state.working.confirmed_reservation.date or "unknown" }}
+- time: {{ state.working.confirmed_reservation.time or "unknown" }}
+- party_size: {{ state.working.confirmed_reservation.party_size or "unknown" }}
+- reference_note: {{ state.workflow.selected_slot_note or "pending" }}
+
+## Menu Preferences
+- requested: {{ state.working.menu_preferences.requested }}
+- highlights: {{ state.working.menu_preferences.highlights | join(", ") if state.working.menu_preferences.highlights else "none" }}
+- dietary_notes: {{ state.working.menu_preferences.dietary_notes or "none" }}
+
+## Staff Feedback
+- latest_message: {{ state.working.staff_feedback or "none" }}
+- pending_questions:
+{% if state.working.pending_questions %}{% for question in state.working.pending_questions %}- {{ question }}
+{% endfor %}{% else %}- none
+{% endif %}
+- alternatives:
+{% if state.working.proposed_alternatives %}{% for option in state.working.proposed_alternatives %}- {{ option.description }} (accepted: {{ option.accepted }}){% if option.notes %} - notes: {{ option.notes }}{% endif %}
+{% endfor %}{% else %}- none
+{% endif %}

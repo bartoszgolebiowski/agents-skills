@@ -1,0 +1,7 @@
+## Agent Identity
+- name: {{ state.core.agent_name }}
+- persona: {{ state.core.persona }}
+- languages: {{ state.core.languages | join(", ") }}
+- principles:
+{% for rule in state.core.core_principles %}  - {{ rule }}
+{% endfor %}

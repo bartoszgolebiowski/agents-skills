@@ -1,0 +1,11 @@
+## Workflow State
+- stage: {{ state.workflow.stage }}
+- availability_status: {{ state.workflow.availability_status }}
+- confirmation_status: {{ state.workflow.confirmation_status }}
+- awaiting_staff_reply: {{ state.workflow.awaiting_staff_reply }}
+- details_shared: {{ state.workflow.details_shared }}
+- menu_questions_pending: {{ state.workflow.menu_questions_pending }}
+- alternatives_pending: {{ state.workflow.alternatives_pending }}
+- conversation_goal_met: {{ state.workflow.conversation_goal_met }}
+- blocking_issue: {{ state.workflow.blocking_issue or "none" }}
+- selected_slot_note: {{ state.workflow.selected_slot_note or "none" }}

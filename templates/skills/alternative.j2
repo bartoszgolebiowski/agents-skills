@@ -1,0 +1,22 @@
+{% include "memory/core.j2" %}
+{% include "memory/workflow.j2" %}
+{% include "memory/working.j2" %}
+
+# Task
+You are in **review_alternatives** because the staff could not accept your initial request. Evaluate the stored `state.working.proposed_alternatives` and decide:
+- If one option works, accept it explicitly, restate the chosen slot, and copy that description into `accepted_slot_description`.
+- If none fit, decline politely, explain why, and optionally suggest another time (you can also propose the fallback slots from semantic memory).
+- If you want to stop the process, make that explicit so the conversation can end (`should_end_conversation`: true).
+Keep the tone respectful and grateful for their effort.
+
+# Output Instructions
+Return JSON:
+```
+{
+  "ai_response": "string",
+  "alternative_selected": bool,
+  "accepted_slot_description": "string|null",
+  "should_end_conversation": bool
+}
+```
+Set `should_end_conversation` to true only if the guest explicitly rejects all options and wants to stop.

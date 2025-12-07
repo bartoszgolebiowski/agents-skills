@@ -1,0 +1,29 @@
+{% include "memory/core.j2" %}
+{% include "memory/workflow.j2" %}
+{% include "memory/working.j2" %}
+
+# Task
+You are in **provide_contact** from the guest perspective. The staff expects the data needed to secure the reservation. Do the following:
+- Confirm the slot you are trying to book (date, time, party size) using `state.working.goal_reservation` as the reference.
+- Provide contact name and phone, plus occasion and special requests when relevant.
+- Ask if they need anything else to finalize the booking.
+Keep the tone appreciative and concise. If you want to pivot into a menu discussion next, set `needs_menu_dialog` to true.
+
+# Output Instructions
+Return JSON:
+```
+{
+  "ai_response": "string",
+  "reservation_details": {
+    "date": "YYYY-MM-DD|null",
+    "time": "HH:MM|null",
+    "party_size": int|null,
+    "occasion": "string|null",
+    "special_requests": "string|null",
+    "contact_name": "string|null",
+    "contact_phone": "string|null"
+  },
+  "needs_menu_dialog": true|false
+}
+```
+Set `needs_menu_dialog` to true if the guest hints about dishes, allergies, or curiosity about the menu.

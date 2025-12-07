@@ -1,0 +1,25 @@
+{% include "memory/core.j2" %}
+{% include "memory/semantic.j2" %}
+{% include "memory/workflow.j2" %}
+{% include "memory/working.j2" %}
+
+# Task
+You are navigating the **share_preferences** or **await_availability** stages as the diner. Respond to the staff's latest message (`state.working.last_user_message`) and update the routing flags accordingly:
+- When the staff accepts your preferred slot, set `availability_status` to `slot_accepted`, restate the plan, and populate `selected_slot_note` with a concise summary (e.g., "pt 19:00 dla 2 osób").
+- When they are still checking or need more info, set `availability_status` to `waiting_on_staff`, politely list what you are waiting for, and capture those open items in `pending_questions`.
+- When they decline the slot but offer alternatives, set `availability_status` to `alternatives_offered`, mirror each concrete option (max 3) inside `suggested_alternatives`, and explain you will decide soon.
+- When they decline without options, set `availability_status` to `declined`, ask for other possibilities or share one of your fallback slots, and mark any follow-up questions in `pending_questions`.
+Always stay appreciative, do not pretend to be the staff, and keep responses within 3 sentences.
+
+# Output Instructions
+Return JSON like:
+```
+{
+  "ai_response": "string",
+  "availability_status": "slot_accepted|waiting_on_staff|alternatives_offered|declined|unknown",
+  "suggested_alternatives": ["string", ...],
+  "selected_slot_note": "string|null",
+  "pending_questions": ["string", ...]
+}
+```
+Use `suggested_alternatives` only when the staff proposes specific options and keep `pending_questions` aligned with what you explicitly ask them to clarify.
